@@ -1,0 +1,35 @@
+<h1>Listing qrcodes</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Hits</th>
+    <th>Geolong</th>
+    <th>Geolat</th>
+    <th>Image</th>
+    <th>User</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @qrcodes.each do |qrcode| %>
+  <tr>
+    <td><%= qrcode.name %></td>
+    <td><%= qrcode.description %></td>
+    <td><%= qrcode.hits %></td>
+    <td><%= qrcode.geoLong %></td>
+    <td><%= qrcode.geoLat %></td>
+    <td><%= qrcode.image %></td>
+    <td><%= qrcode.user_id %></td>
+    <td><%= link_to 'Show', [@user, qrcode] %></td>
+    <td><%= link_to 'Edit', edit_user_qrcode_path(@user, qrcode) %></td>
+    <td><%= link_to 'Destroy', [@user, qrcode], confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Qrcode', new_user_qrcode_path(@user) %>

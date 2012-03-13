@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Collection:</b>
+  <%= @qr_collection_placement.collection %>
+</p>
+
+<p>
+  <b>Qrcode:</b>
+  <%= @qr_collection_placement.qrcode %>
+</p>
+
+
+<%= link_to 'Edit', edit_qr_collection_placement_path(@qr_collection_placement) %> |
+<%= link_to 'Back', qr_collection_placements_path %>

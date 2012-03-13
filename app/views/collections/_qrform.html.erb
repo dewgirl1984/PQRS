@@ -1,0 +1,20 @@
+<%= form_for([@user, @collection, @qrcode]) do |f| %>
+  <% if @collection.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@collection.errors.count, "error") %> prohibited this collection from being saved: </h2>
+      <ul>
+      <% @collection.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+ 
+  <div class="field">
+    <%= f.label(:qrcode, :name) %><br />
+    <%= f.text_fiel(:qrcode, :name) %><br />
+  </div>i
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<%end>

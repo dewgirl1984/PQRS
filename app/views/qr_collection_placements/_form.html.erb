@@ -1,0 +1,25 @@
+<%= form_for(@qr_collection_placement) do |f| %>
+  <% if @qr_collection_placement.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@qr_collection_placement.errors.count, "error") %> prohibited this qr_collection_placement from being saved:</h2>
+
+      <ul>
+      <% @qr_collection_placement.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :collection %><br />
+    <%= f.text_field :collection %>
+  </div>
+  <div class="field">
+    <%= f.label :qrcode %><br />
+    <%= f.text_field :qrcode %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

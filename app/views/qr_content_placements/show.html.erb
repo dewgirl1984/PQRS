@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Qrcontent:</b>
+  <%= @qr_content_placement.qrcontent %>
+</p>
+
+<p>
+  <b>Qrcode:</b>
+  <%= @qr_content_placement.qrcode %>
+</p>
+
+
+<%= link_to 'Edit', edit_qr_content_placement_path(@qr_content_placement) %> |
+<%= link_to 'Back', qr_content_placements_path %>

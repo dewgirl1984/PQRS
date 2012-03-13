@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @qrcode.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @qrcode.description %>
+</p>
+
+<p>
+  <b>Hits:</b>
+  <%= @qrcode.hits %>
+</p>
+
+<p>
+  <b>Geolong:</b>
+  <%= @qrcode.geoLong %>
+</p>
+
+<p>
+  <b>Geolat:</b>
+  <%= @qrcode.geoLat %>
+</p>
+
+<p>
+  <b>Image:</b>
+  <%= @qrcode.image %>
+</p>
+
+<p>
+  <b>User:</b>
+  <%= @qrcode.user_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_user_qrcode_path(@user,@qrcode) %> |
+<%= link_to 'Back', user_qrcodes_path(@user) %>

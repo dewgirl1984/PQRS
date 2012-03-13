@@ -1,0 +1,45 @@
+<%= form_for([@user, @qrcode]) do |f| %>
+  <% if @qrcode.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@qrcode.errors.count, "error") %> prohibited this qrcode from being saved:</h2>
+
+      <ul>
+      <% @qrcode.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </div>
+  <div class="field">
+    <%= f.label :hits %><br />
+    <%= f.number_field :hits %>
+  </div>
+  <div class="field">
+    <%= f.label :geoLong %><br />
+    <%= f.text_field :geoLong %>
+  </div>
+  <div class="field">
+    <%= f.label :geoLat %><br />
+    <%= f.text_field :geoLat %>
+  </div>
+  <div class="field">
+    <%= f.label :image %><br />
+    <%= f.text_field :image %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br />
+    <%= f.number_field :user_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

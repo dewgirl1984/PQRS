@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Uuid:</b>
+  <%= @user.uuid %>
+</p>
+
+<p>
+  <b>Email:</b>
+  <%= @user.email %>
+</p>
+
+<p>
+  <b>First Name:</b>
+  <%= @user.first_name %>
+</p>
+<p>
+  <b>Last Name:</b>
+  <%= @user.last_name %>
+</p>
+
+<%= link_to 'Create Collection', new_user_collection_path(@user) %> |
+<%= link_to 'Create QR Code', new_user_qrcode_path(@user) %>
+<%= link_to 'Edit', edit_user_path(@user) %> |
+<%= link_to 'Back', users_path %>

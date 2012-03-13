@@ -1,0 +1,25 @@
+<h1>Listing qrcontents</h1>
+
+<table>
+  <tr>
+    <th>Url</th>
+    <th>Content</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @qrcontents.each do |qrcontent| %>
+  <tr>
+    <td><%= qrcontent.url %></td>
+    <td><%= qrcontent.content %></td>
+    <td><%= link_to 'Show', qrcontent %></td>
+    <td><%= link_to 'Edit', edit_qrcontent_path(qrcontent) %></td>
+    <td><%= link_to 'Destroy', qrcontent, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Qrcontent', new_qrcontent_path %>

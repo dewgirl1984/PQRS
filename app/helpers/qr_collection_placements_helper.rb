@@ -1,0 +1,2 @@
+module QrCollectionPlacementsHelper
+end
