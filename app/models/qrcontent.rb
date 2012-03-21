@@ -1,3 +1,5 @@
 class Qrcontent < ActiveRecord::Base
-  belongs_to :content
+  has_many :qr_content_placements, dependent: :destroy
+  has_many :qrcodes, through: :qr_content_placements
+  has_one :content
 end

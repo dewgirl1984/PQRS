@@ -1,11 +1,12 @@
 class CommentsController < ApplicationController
+   
   # GET /comments
   # GET /comments.json
   def index
     @comments = Comment.all
 
     respond_to do |format|
-      format.html # index.html.erb
+      #format.html # index.html.erb
       format.json { render json: @comments }
     end
   end
@@ -16,7 +17,7 @@ class CommentsController < ApplicationController
     @comment = Comment.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      #format.html # show.html.erb
       format.json { render json: @comment }
     end
   end
@@ -27,7 +28,7 @@ class CommentsController < ApplicationController
     @comment = Comment.new
 
     respond_to do |format|
-      format.html # new.html.erb
+      #format.html # new.html.erb
       format.json { render json: @comment }
     end
   end
@@ -40,19 +41,29 @@ class CommentsController < ApplicationController
   # POST /comments
   # POST /comments.json
   def create
-    @comment = Comment.new(params[:comment])
+    @qrcode = Qrcode.find(params[:qrcode_id])
 
+    #puts "I GOT THIS FOR QRCODE"
+    #puts @qrcode
+    if @current_user.nil?
+      @user_id = -1
+    else
+      @user_id = @current_user.id
+    end
+    @comment = Comment.new(:content=>params[:content], 
+                           :user_id=>@user_id)
+    @qrcode.comments << @comment
+    #@qrcode.comments.add(@comment)
+    #@qrcode.comments.new(params[:comment])
     respond_to do |format|
       if @comment.save
-        format.html { redirect_to @comment, notice: 'Comment was successfully created.' }
-        format.json { render json: @comment, status: :created, location: @comment }
+        format.json {render json: @comment, status: :created}
       else
-        format.html { render action: "new" }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+	format.json { render json: @comment.errors,status: 
+                                   :unprocessable_entity}
       end
     end
   end
-
   # PUT /comments/1
   # PUT /comments/1.json
   def update
@@ -60,10 +71,10 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.update_attributes(params[:comment])
-        format.html { redirect_to @comment, notice: 'Comment was successfully updated.' }
+        #format.html { redirect_to @comment, notice: 'Comment was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: "edit" }
+        #format.html { render action: "edit" }
         format.json { render json: @comment.errors, status: :unprocessable_entity }
       end
     end
@@ -76,7 +87,7 @@ class CommentsController < ApplicationController
     @comment.destroy
 
     respond_to do |format|
-      format.html { redirect_to comments_url }
+      #format.html { redirect_to comments_url }
       format.json { head :no_content }
     end
   end

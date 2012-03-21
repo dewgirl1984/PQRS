@@ -1,26 +1,43 @@
 class CollectionsController < ApplicationController
-  before_filter :get_user
-
-  def get_user
-    @user = User.find(params[:user_id])
-  end 
-  
-  def new_qrcode
-    @qr = User.qrcodes.new
+  before_filter :authenticate, :except => [:get_qrcodes]
     
-  end 
+  def new_qrcode
+    ## NEED TO ADD PROCESS OF ADDING QR CODE TO USER LIST OF QR
+    ## CODES AND THEN ADDING IT TO THE COLLECTION
+    #@qr = User.qrcodes.new
+    
+  end
+  #Get all QR Codes for a collection 
   def get_qrcodes
-    @collection = @user.collections.find(params[:collection_id])
+    @collection = Collection.find(params[:collection_id])
     @qrcodes = @collection.qrcodes
     respond_to do |format|
       format.html
-      format.json { render json: [@user, @collections, @qrcodes] }
+      format.json { render json: [@collections, @qrcodes] }
     end
   end
+
+  def add_qr
+    @collection = Collection.find(params[:collection_id])
+    @qr = @current_user.qrcodes.find(params[:qrcode_id])
+
+    @collection.qrcodes << @qr
+    if @collection.save
+      respond_to do |format|
+        format.html { redirect_to user_collection_qrcodes_path, 
+                      notice: 'QR Code added to collection successfully.' }
+        format.json { render json: [@current_user, @collection, @qr] }
+      end
+    end
+  end
+
   # GET /collections
   # GET /collections.json
   def index
-    @collections = @user.collections
+    ### WHAT IF ANOTHER USER IS TRYING TO LOOK AT
+    #   ANOTHER USER'S COLLECTION?
+    #
+    @collections = @current_user.collections
 
     respond_to do |format|
       format.html # index.html.erb
@@ -32,8 +49,7 @@ class CollectionsController < ApplicationController
   # GET /collections/1.json
   def show
 
-    @collection = @user.collections.find(params[:id])
-
+    @collection = @current_user.collections.find(params[:id])
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @collection }
@@ -42,9 +58,9 @@ class CollectionsController < ApplicationController
 
   # GET /collections/new
   # GET /collections/new.json
+  # NOT NEEDED
   def new
     @collection = @user.collections.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @collection }
@@ -58,16 +74,17 @@ class CollectionsController < ApplicationController
 
   # POST /collections
   # POST /collections.json
+  # ADD COLLECTION BY ATTRIBUTES TOO
   def create
-    @collection = @user.collections.new(params[:collection])
+    @collection = @current_user.collections.new(params[:collection])
 
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to [@user, @collection],
+        format.html { redirect_to [@current_user, @collection],
 		      notice: 'Collection was successfully created.' }
-        format.json { render json: [@user, @collection], 
+        format.json { render json: [@current_user, @collection], 
 		      status: :created, 
-                      location: [@user,  @collection] }
+                      location: [@current_user,  @collection] }
       else
         format.html { render action: "new" }
         format.json { render json: @collection.errors, 
@@ -79,11 +96,11 @@ class CollectionsController < ApplicationController
   # PUT /collections/1
   # PUT /collections/1.json
   def update
-    @collection = @user.collections.find(params[:id])
+    @collection = @current_user.collections.find(params[:id])
 
     respond_to do |format|
       if @collection.update_attributes(params[:collection])
-        format.html { redirect_to [@user, @collection],
+        format.html { redirect_to [@current_user, @collection],
                       notice: 'Collection was successfully updated.' }
         format.json { head :no_content }
       else
@@ -97,7 +114,7 @@ class CollectionsController < ApplicationController
   # DELETE /collections/1
   # DELETE /collections/1.json
   def destroy
-    @collection = @user.collections.find(params[:id])
+    @collection = @current_user.collections.find(params[:id])
     @collection.destroy
 
     respond_to do |format|

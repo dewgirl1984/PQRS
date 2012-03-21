@@ -1,30 +1,35 @@
 Pqrs::Application.routes.draw do
- # resources :qr_content_placements
-
- # resources :contents
-
- # resources :qrcontents
-
- # resources :qr_collection_placements
-
- # resources :collections
-
- # resources :comments
-
- resources :users do
-   resources :qrcodes do
-     resources :comments
-     resources :qrcontents
-   end
-   resources :collections do
-     match '/add_qr/:qrcode_id'=> 'qr_collection_placements#add_qr', 
-           :via => :get
-     match '/qrcodes/' => 'collections#get_qrcodes', :via => :get
-     match '/qrcodes/new'=> 'collections#new_qrcode', :via => :post
+ 
+# resources :users do
+ #  resources :qrcodes do
+  #   resources :comments
+   #  resources :qrcontents
+  # end
+  # resources :collections do
+   #  match '/add_qr/:qrcode_id'=> 'collections#add_qr', 
+    #       :via => :post
+    # match '/qrcodes/' => 'collections#get_qrcodes', :via => :get
+    # match '/qrcodes/new'=> 'collections#new_qrcode', :via => :post
      #resources :qrcodes
-   end
- end
+   #end
+# end
 
+resources :users do
+  match '/get_collections/' => 'users#get_collections', :via => :get
+  match '/get_qrcodes/' => 'users#get_qrcodes', :via => :get
+end
+
+resources :qrcodes do
+  resources :comments
+  resources :qrcontents
+end
+
+resources :collections do
+  match '/add_qr/:qrcode_id' => 'collections#add_qr',
+         :via => :post
+  match '/qrcodes/' => 'collections#get_qrcodes', :via => :get
+  match '/qrcodes/new' => 'collections#new_qrcode', :via => :post
+end 
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

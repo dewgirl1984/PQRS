@@ -5,15 +5,14 @@ gem 'rails', '3.2.2'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'oauth'
-gem 'oauth-plugin','>= 0.4.0.pre1'
+gem 'gdata'
 gem 'mysql2'
 gem 'foreigner'
 gem 'passenger'
 gem 'execjs'
 gem 'therubyracer'
-gem 'gdata'
-
+gem 'oauth2'
+gem 'oauth'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

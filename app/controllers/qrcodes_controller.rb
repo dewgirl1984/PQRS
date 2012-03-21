@@ -1,10 +1,28 @@
 class QrcodesController < ApplicationController
-  before_filter :get_user
-  def get_user
-    @user = User.find(params[:user_id])
+  require "net/http"
+  require "uri"
+
+  before_filter :authenticate, :except => [:show]
+  #before_filter :check_client, :only => [:show]  
+
+  def add_comment
+    @qr = Qrcode.find(params[:qrcode_id])
+    if !params[:comment].nil?
+      @comment = Comment.new(params[:comment])
+    else
+      @comment = Comment.new(:content=>params[:content], :user=>@current_user) 
+    end
+    
+    @qr.comments << @comment
+    if @qr.save
+      render json: [@qr, @comment], status: :created
+    else 
+      render json: @qr.errors, status: :unprocessable_entity
+    end   
   end
   # GET /qrcodes
   # GET /qrcodes.json
+  ##############NOT NEEEEEEEEEEEDED################
   def index
     if params.include?(:collection_id)
       @qrcodes = @user.collections.find(params[:collection_id]).qrcodes
@@ -20,11 +38,14 @@ class QrcodesController < ApplicationController
   # GET /qrcodes/1
   # GET /qrcodes/1.json
   def show
-    @qrcode = @user.qrcodes.find(params[:id])
+    @qrcode = Qrcode.find(params[:id])
+    @qrcode.hits = @qrcode.hits + 1
+    url = "http://srprog-sp12-01.cs.fiu.edu:3000/qrcodes/#{@qrcode.id}.json"
 
+    puts url
+    @qrcode.save    
     respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @qrcode }
+      format.json { render json: @qrcode, except: [:id, :user_id, :updated_at]}
     end
   end
 
@@ -49,55 +70,70 @@ class QrcodesController < ApplicationController
   end
 
   # POST /qrcodes
-  # POST /qrcodes.json
+  # POST /qrcodes.json\
+  #
+  # NOT DONE
   def create
-    if params.include?(:collection_id)
-      @collection = @user.collections.find(params[:collection_id])
-      @qrcode = @collection.qrcodes.new(params[:qrcode])
-      respond_to do |format|
-        if @qrcode.save
-          format.html { redirect_to [@collection, @qrcode],
-			notice: 'Qrcode successfully added to collection.' }
-          format.json { render json: [@collection , @qrcode],
-				status: :created,
-				location: [@collection, @qrcode] }
-
-	else
-	  format.json { render json: @qrcode.errors, status: :unprocessable_entity }
-	end
-      end
+    if !params[:qrcode].nil?
+      @qr = @current_user.qrcodes.new(:qrcode)
     else
-      
-      @qrcode = @user.qrcodes.new(params[:qrcode])
+      @qr = @current_user.qrcodes.new(:name => params[:name], 
+                       :description => params[:description],
+                       :geoLong => params[:longitude], 
+                       :geoLat => params[:latitude],
+                       :hits => 0)
+      @videos = params[:youtubeUrls]
+      @images = params[:imageUrls]
+      @documents = params[:documentUrls]
+      @podcasts = params[:podcastUrls]
 
-      respond_to do |format|
-        if @qrcode.save
-          format.html { redirect_to [@user, @qrcode], 
-                        notice: 'Qrcode was successfully created.' }
-          format.json { render json: [@user, @qrcode],
-                               status: :created,
-                               location: [@user, @qrcode] }
-        else
-          format.html { render action: "new" }
-          format.json { render json: @qrcode.errors, 
-                               status: :unprocessable_entity }
-        end
+      @videos.each do |v|
+       # puts "THIS IS WHAT I HAVE FOR V"
+       # puts v 
+        @content = Qrcontent.new(:url => v, :content_id =>5)
+       # puts @content
+        @qr.qrcontents << @content
+      end
+      @images.each do |i|
+        @content = Qrcontent.new(:url => i, :content_id => 1)
+        @qr.qrcontents << @content
+      end
+      @documents.each do |d|
+        @content = Qrcontent.new(:url => d, :content_id => 3)
+        @qr.qrcontents << @content
+      end
+      @podcasts.each do |p|
+        @content = Qrcontent.new(:url => p, :content_id => 4)
+        @qr.qrcontents << @content
+      end 
+    end 
+    respond_to do |format|
+      if @qr.save
+         #format.html { redirect_to [@user, @qrcode], 
+         #             notice: 'Qrcode was successfully created.' }
+        format.json { render json: [@qr],
+                             status: :created,
+                             location: [@qr] }
+      else
+      #  format.html { render action: "new" }
+        format.json { render json: @qr.errors, 
+                             status: :unprocessable_entity }
       end
     end
   end
+  
 
   # PUT /qrcodes/1
   # PUT /qrcodes/1.json
+  #
+  # ADD LOGIC TO UPDATE INDIVIDUAL ATTRIBUTES
   def update
-    @qrcode = @user.qrcodes.find(params[:id])
+    @qrcode = @current_user.qrcodes.find(params[:id])
 
     respond_to do |format|
       if @qrcode.update_attributes(params[:qrcode])
-        format.html { redirect_to [@user,@qrcode],
-                      notice: 'Qrcode was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: "edit" }
         format.json { render json: @qrcode.errors, status: :unprocessable_entity }
       end
     end
@@ -105,12 +141,12 @@ class QrcodesController < ApplicationController
 
   # DELETE /qrcodes/1
   # DELETE /qrcodes/1.json
+  # NOT SURE IF THIS IS NEEDED
   def destroy
-    @qrcode = @user.qrcodes.find(params[:id])
+    @qrcode = @current_user.qrcodes.find(params[:id])
     @qrcode.destroy
 
     respond_to do |format|
-      format.html { redirect_to qrcodes_url }
       format.json { head :no_content }
     end
   end

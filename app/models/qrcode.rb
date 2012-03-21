@@ -3,4 +3,6 @@ class Qrcode < ActiveRecord::Base
   has_many :comments, dependent: :destroy
   has_many :qr_collection_placements, dependent: :destroy
   has_many :collections, through: :qr_collection_placements
+  has_many :qr_content_placements, dependent: :destroy
+  has_many :qrcontents, through: :qr_content_placements
 end

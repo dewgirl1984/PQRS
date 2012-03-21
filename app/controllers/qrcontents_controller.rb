@@ -1,8 +1,13 @@
 class QrcontentsController < ApplicationController
+  before_filter :get_qr
+
+  def get_qr
+    @qr = Qrcode.find(params[:qrcode_id])
+  end
   # GET /qrcontents
   # GET /qrcontents.json
   def index
-    @qrcontents = Qrcontent.all
+    @qrcontents = @qr.qrcontents
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +18,7 @@ class QrcontentsController < ApplicationController
   # GET /qrcontents/1
   # GET /qrcontents/1.json
   def show
-    @qrcontent = Qrcontent.find(params[:id])
+    @qrcontent = @qr.qrcontents.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -40,23 +45,30 @@ class QrcontentsController < ApplicationController
   # POST /qrcontents
   # POST /qrcontents.json
   def create
-    @qrcontent = Qrcontent.new(params[:qrcontent])
+    @qrcontent = @qr.qrcontents.new(params[:qrcontent])
 
     respond_to do |format|
       if @qrcontent.save
-        format.html { redirect_to @qrcontent, notice: 'Qrcontent was successfully created.' }
-        format.json { render json: @qrcontent, status: :created, location: @qrcontent }
+        format.html { redirect_to @qrcontent, 
+                      notice: 'Qrcontent was successfully created.' }
+        format.json { render json: @qrcontent, 
+                      status: :created, location: @qrcontent }
       else
         format.html { render action: "new" }
-        format.json { render json: @qrcontent.errors, status: :unprocessable_entity }
+        format.json { render json: @qrcontent.errors, 
+                      status: :unprocessable_entity }
       end
+    end
+    ###not sure if this works#####
+    params[:qrcontents][:qrcontent].each do |qc|
+      @qrcontents = @qr.qrcontents.new(qc)
     end
   end
 
   # PUT /qrcontents/1
   # PUT /qrcontents/1.json
   def update
-    @qrcontent = Qrcontent.find(params[:id])
+    @qrcontent = @qr.qrcontents.find(params[:id])
 
     respond_to do |format|
       if @qrcontent.update_attributes(params[:qrcontent])
