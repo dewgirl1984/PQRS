@@ -13,6 +13,9 @@ gem 'execjs'
 gem 'therubyracer'
 gem 'oauth2'
 gem 'oauth'
+gem 'rqrcode-rails3'
+gem 'mini_magick'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

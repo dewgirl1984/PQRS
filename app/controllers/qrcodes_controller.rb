@@ -1,10 +1,8 @@
 class QrcodesController < ApplicationController
-  require "net/http"
-  require "uri"
-
-  before_filter :authenticate, :except => [:show]
+  require 'net/http'
+  before_filter :authenticate, :except => [:show, :show_image, :create]
   #before_filter :check_client, :only => [:show]  
-
+    
   def add_comment
     @qr = Qrcode.find(params[:qrcode_id])
     if !params[:comment].nil?
@@ -40,13 +38,27 @@ class QrcodesController < ApplicationController
   def show
     @qrcode = Qrcode.find(params[:id])
     @qrcode.hits = @qrcode.hits + 1
-    url = "http://srprog-sp12-01.cs.fiu.edu:3000/qrcodes/#{@qrcode.id}.json"
-
-    puts url
     @qrcode.save    
     respond_to do |format|
       format.json { render json: @qrcode, except: [:id, :user_id, :updated_at]}
     end
+  end
+  
+  #GET /qrcodes/show_image/1
+  #
+  def show_image
+    #caches_page :show_image
+    host = 'chart.googleapis.com'
+    if @qrcode = Qrcode.find(params[:qrcode_id])
+      res = Net::HTTP.get_response(host, @qrcode.image_url)
+      if @image = res.body
+        send_data(
+          @image, :disposition => 'inline'
+        )
+      else
+        puts "SOMETHING WENT WRONG"
+      end
+    end 
   end
 
   # GET /qrcodes/new
@@ -71,13 +83,17 @@ class QrcodesController < ApplicationController
 
   # POST /qrcodes
   # POST /qrcodes.json\
-  #
+  # THINK OF USING UNIQUE NAMES FOR QR CODES
+  # THIS WILL ALLOW TO FIND_BY_NAME with USER_ID
   # NOT DONE
   def create
+    #PUT THE LINE FOR @CURRENT USER BACK AFTER TESTING
+    @u = User.find(13)
     if !params[:qrcode].nil?
-      @qr = @current_user.qrcodes.new(:qrcode)
+      @qr = @u.qrcodes.new(:qrcode)
     else
-      @qr = @current_user.qrcodes.new(:name => params[:name], 
+      #instead of @u is @current_user
+      @qr = @u.qrcodes.new(:name => params[:name], 
                        :description => params[:description],
                        :geoLong => params[:longitude], 
                        :geoLat => params[:latitude],
@@ -86,33 +102,46 @@ class QrcodesController < ApplicationController
       @images = params[:imageUrls]
       @documents = params[:documentUrls]
       @podcasts = params[:podcastUrls]
-
-      @videos.each do |v|
-       # puts "THIS IS WHAT I HAVE FOR V"
-       # puts v 
-        @content = Qrcontent.new(:url => v, :content_id =>5)
-       # puts @content
-        @qr.qrcontents << @content
+      if !@videos.nil? #|| !@videos.empty?  
+        @videos.each do |v|
+         @content = Qrcontent.new(:url => v, :content_id =>5)
+         @qr.qrcontents << @content
+        end
       end
-      @images.each do |i|
-        @content = Qrcontent.new(:url => i, :content_id => 1)
-        @qr.qrcontents << @content
+      if !@images.nil? #|| !@images.empty?
+        @images.each do |i|
+          @content = Qrcontent.new(:url => i, :content_id => 1)
+          @qr.qrcontents << @content
+        end
       end
-      @documents.each do |d|
-        @content = Qrcontent.new(:url => d, :content_id => 3)
-        @qr.qrcontents << @content
+      if !@documents.nil? #|| !@documents.empty?
+        @documents.each do |d|
+          @content = Qrcontent.new(:url => d, :content_id => 3)
+          @qr.qrcontents << @content
+        end
       end
-      @podcasts.each do |p|
-        @content = Qrcontent.new(:url => p, :content_id => 4)
-        @qr.qrcontents << @content
+      if !@podcasts.nil? #|| !@podcasts.empty?
+        @podcasts.each do |p|
+          @content = Qrcontent.new(:url => p, :content_id => 4)
+          @qr.qrcontents << @content
+        end
       end 
     end 
+    puts @qr.id
+    host = 'chart.googleapis.com'
+    
     respond_to do |format|
       if @qr.save
-         #format.html { redirect_to [@user, @qrcode], 
-         #             notice: 'Qrcode was successfully created.' }
-        format.json { render json: [@qr],
-                             status: :created,
+        url = "http://srprog-sp12-01.cs.fiu.edu:3000/qrcodes/#{@qr.id}"
+        puts url 
+        path = "/chart?chs=150x150&cht=qr&chl=#{url}"
+        @qr.image_url = path
+        #res = Net::HTTP.get_response(host, path)
+        #@qr.image = res.body
+        @qr.save
+        #format.html { redirect_to [@user, @qrcode], 
+        #             notice: 'Qrcode was successfully created.' }
+        format.json { render json: [@qr],  status: :created,
                              location: [@qr] }
       else
       #  format.html { render action: "new" }

@@ -20,6 +20,7 @@ resources :users do
 end
 
 resources :qrcodes do
+  match '/show_image/' => 'qrcodes#show_image', :via => :get
   resources :comments
   resources :qrcontents
 end

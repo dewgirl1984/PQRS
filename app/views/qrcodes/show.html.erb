@@ -1,5 +1,12 @@
 <p id="notice"><%= notice %></p>
-
+<table>
+  <tr>
+    <th>Photo</th>
+  </tr>
+  <tr>
+    <%= tag(:img, { :src => @data }, false) %>
+  </tr>
+</table>
 <p>
   <b>Name:</b>
   <%= @qrcode.name %>
@@ -36,5 +43,5 @@
 </p>
 
 
-<%= link_to 'Edit', edit_user_qrcode_path(@user,@qrcode) %> |
-<%= link_to 'Back', user_qrcodes_path(@user) %>
+<!-- link_to 'Edit', edit_user_qrcode_path(@user,@qrcode) %--> 
+<!-- link_to 'Back', user_qrcodes_path(@user) %-->
