@@ -1,7 +1,7 @@
 class QrcodesController < ApplicationController
   require 'net/http'
   before_filter :authenticate, :except => [:show, :show_image, :create]
-  #before_filter :check_client, :only => [:show]  
+  before_filter :check_client, :only => [:show]  
     
   def add_comment
     @qr = Qrcode.find(params[:qrcode_id])
@@ -46,19 +46,25 @@ class QrcodesController < ApplicationController
   
   #GET /qrcodes/show_image/1
   #
+  #CHECK IF QR IS CUSTOM OR NOT
   def show_image
     #caches_page :show_image
-    host = 'chart.googleapis.com'
+   
+    #host = 'chart.googleapis.com'
     if @qrcode = Qrcode.find(params[:qrcode_id])
-      res = Net::HTTP.get_response(host, @qrcode.image_url)
-      if @image = res.body
-        send_data(
-          @image, :disposition => 'inline'
-        )
-      else
+      if @qrcode.image.nil?
+        host = 'chart.googleapis.com'
+        res = Net::HTTP.get_response(host, @qrcode.image_url)
+        if @image = res.body
+          send_data(@image, :disposition => 'inline')
+        else
         puts "SOMETHING WENT WRONG"
-      end
-    end 
+        end
+      else
+        @image = @qrcode.image
+        send_data(@image, :disposition => 'inline')
+      end 
+    end
   end
 
   # GET /qrcodes/new
@@ -128,29 +134,59 @@ class QrcodesController < ApplicationController
       end 
     end 
     puts @qr.id
-    host = 'chart.googleapis.com'
+    #host = 'chart.googleapis.com'
     
     respond_to do |format|
       if @qr.save
-        url = "http://srprog-sp12-01.cs.fiu.edu:3000/qrcodes/#{@qr.id}"
-        puts url 
-        path = "/chart?chs=150x150&cht=qr&chl=#{url}"
-        @qr.image_url = path
-        #res = Net::HTTP.get_response(host, path)
-        #@qr.image = res.body
-        @qr.save
-        #format.html { redirect_to [@user, @qrcode], 
-        #             notice: 'Qrcode was successfully created.' }
+        url = @qr.get_url
+        if params.include?(:custom)
+          begin
+            host = 'mojiq.kazina.com'
+            l1 = params[:label]
+            pos = params[:pos]
+            lc = params[:lc]
+            path = "/mojiq2.cgi?data=#{url}&s=4&l1=#{l1}&pos=#{pos}&lc=#{lc}&f=0"
+            puts path
+            puts host
+            res = Net::HTTP.get_response(host, path)
+            puts res
+            puts res.body 
+            @qr.image = res.body
+            puts @qr.image
+            puts "I GOT HEREEEEEEEEEEEEEEEEEEEEEEE"
+            @qr.save
+          rescue
+            puts @qr.errors
+            puts "CANNOT CREATE CUSTOM QR CODE"
+            #@qr.delete
+          end
+        else
+          begin
+            #url = @qr.get_url
+            #puts url 
+            path = "/chart?chs=150x150&cht=qr&chl=#{url}"
+            host = 'chart.googleapis.com'
+            #@qr.image_url = path
+            res = Net::HTTP.get_response(host, path)
+            @qr.image = res.body
+            @qr.save
+          rescue
+            puts "Could not get url for qrcode"
+            @qr.delete
+          end
+          #format.html { redirect_to [@user, @qrcode], 
+          #             notice: 'Qrcode was successfully created.' }
+        end
         format.json { render json: [@qr],  status: :created,
                              location: [@qr] }
-      else
-      #  format.html { render action: "new" }
-        format.json { render json: @qr.errors, 
-                             status: :unprocessable_entity }
+      else 
+        #  format.html { render action: "new" }
+          format.json { render json: @qr.errors, 
+                               status: :unprocessable_entity }
       end
     end
   end
-  
+ 
 
   # PUT /qrcodes/1
   # PUT /qrcodes/1.json

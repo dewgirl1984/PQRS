@@ -1,3 +1,3 @@
 class Content < ActiveRecord::Base
-	belongs_to :qrcontent
+  belongs_to :qrcontent
 end

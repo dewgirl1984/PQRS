@@ -6,7 +6,8 @@ class ApplicationController < ActionController::Base
     puts "I GOT THIS FROM USER AGENT"
     puts @user_agent
     #ADDED STATUS NO CONTENT TO SEE IF IT HALTS OUT    
-    render :file=>"public/download", :format=>[:html], :status=>"redirected"  if !@user_agent.include? "gtm-oauth2 FIU.fiu/1.0" 
+    render :file=>"public/download", :format=>[:html] if !@user_agent.include? "gtm-oauth2 FIU.fiu/1.0"
+#:status=>"redirected"  if !@user_agent.include? "gtm-oauth2 FIU.fiu/1.0" 
   end
 
   def authenticate
