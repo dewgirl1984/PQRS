@@ -62,16 +62,16 @@
 #   }
 # }
 # 
-OAUTH_CREDENTIALS={
-  :google=>{
-    :key=>"anonymous",
-    :secret=>"anonymous",
-    :scope=>"http://gdata.youtube.com",
-    :options=> {:site => "http://www.youtube.com",
-                :request_token_path => "/accounts/OauthGetRequestToken",
-                :access_token_path => "/accounts/OAuthgetAccesstoken",
-                :authorize_path => "/accounts/OAuthAuthorizeToken"}
-  }
-} unless defined? OAUTH_CREDENTIALS
-
-load 'oauth/models/consumers/service_loader.rb'
+#OAUTH_CREDENTIALS={
+#  :google=>{
+#    :key=>"anonymous",
+#    :secret=>"anonymous",
+#    :scope=>"http://gdata.youtube.com",
+#    :options=> {:site => "http://www.youtube.com",
+#                :request_token_path => "/accounts/OauthGetRequestToken",
+#                :access_token_path => "/accounts/OAuthgetAccesstoken",
+#                :authorize_path => "/accounts/OAuthAuthorizeToken"}
+#  }
+#} unless defined? OAUTH_CREDENTIALS
+#
+#load 'oauth/models/consumers/service_loader.rb'
