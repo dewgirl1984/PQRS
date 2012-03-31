@@ -37,10 +37,13 @@ class QrcodesController < ApplicationController
   # GET /qrcodes/1.json
   def show
     @qrcode = Qrcode.find(params[:id])
+    @user = User.find(@qrcode.user_id)
     @qrcode.hits = @qrcode.hits + 1
     @qrcode.save    
     respond_to do |format|
-      format.json { render json: @qrcode, except: [:id, :user_id, :updated_at]}
+      format.json {render json: [@qrcode.to_json(except: 
+					 [:id, :user_id, :updated_at, :image]), 
+                                @user.to_json(only: [:first_name, :last_name])]} #[{@qrcode, except: [:id, :user_id, :updated_at, :image]}, {@user, only: [:first_name, :last_name]}]}
     end
   end
   
